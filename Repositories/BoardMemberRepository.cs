@@ -1,4 +1,5 @@
-﻿using Dapper;
+﻿using System.Data;
+using Dapper;
 using TaskManagementSystem.Models;
 
 namespace TaskManagementSystem.Repositories;
@@ -15,22 +16,19 @@ public class BoardMemberRepository : IBoardMemberRepository
     public async Task<IEnumerable<BoardMember>> GetBoardMembersAsync(Guid boardId)
     {
         using var connection = _context.CreateConnection();
-        const string sql = @"
-            SELECT bm.*, u.Username, u.IsActive 
-            FROM BoardMembers bm
-            JOIN Users u ON bm.UserId = u.UserId
-            WHERE bm.BoardId = @BoardId";
-
-        return await connection.QueryAsync<BoardMember, User, BoardMember>(
-            sql,
-            (member, user) =>
-            {
+        
+        var result = await connection.QueryAsync<BoardMember, User, BoardMember>(
+            "sp_GetBoardMembers",
+            (member, user) => {
                 member.User = user;
                 return member;
             },
             new { BoardId = boardId },
-            splitOn: "Username"
+            splitOn: "Username",
+            commandType: CommandType.StoredProcedure
         );
+
+        return result;
     }
 
     public async Task AddBoardMemberAsync(BoardMember member)

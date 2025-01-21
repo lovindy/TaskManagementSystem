@@ -1,9 +1,13 @@
 ﻿version: '3.8'
 services:
   taskmanagementsystem:
+    image: taskmanagementsystem
     build:
       context: .
       dockerfile: Dockerfile
+    ports:
+      - "8080:8080" 
+      - "8081:8081"
     networks:
       - task_network
 
@@ -11,7 +15,7 @@ services:
     image: mcr.microsoft.com/mssql/server:2019-latest
     environment:
       - ACCEPT_EULA=Y
-      - SA_PASSWORD=YourStrong@Passw0rd
+      - SA_PASSWORD=ThePassword123!
     ports:
       - "1434:1433"
     volumes:

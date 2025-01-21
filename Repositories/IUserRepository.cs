@@ -9,8 +9,6 @@ public interface IUserRepository
     Task<User> GetUserByUsernameAsync(string username);
     Task<bool> ValidateUserCredentialsAsync(string username, string password);
     Task UpdateUserAsync(User user);
-    Task ChangePasswordAsync(Guid userId, string newPassword);
-    Task DeactivateUserAsync(Guid userId);
     Task<IEnumerable<User>> SearchUsersAsync(string searchTerm);
     Task<bool> UsernameExistsAsync(string username);
 }

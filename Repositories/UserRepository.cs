@@ -19,7 +19,7 @@ public class UserRepository : IUserRepository
     public async Task<Guid> CreateUserAsync(User user, string password)
     {
         using var connection = _context.CreateConnection();
-        
+
         var parameters = new DynamicParameters();
         parameters.Add("@Username", user.Username);
         parameters.Add("@PasswordHash", HashPassword(password));
@@ -37,7 +37,7 @@ public class UserRepository : IUserRepository
     public async Task<User> GetUserByIdAsync(Guid userId)
     {
         using var connection = _context.CreateConnection();
-        
+
         return await connection.QuerySingleOrDefaultAsync<User>(
             "sp_GetUserById",
             new { UserId = userId },
@@ -48,7 +48,7 @@ public class UserRepository : IUserRepository
     public async Task<User> GetUserByUsernameAsync(string username)
     {
         using var connection = _context.CreateConnection();
-        
+
         return await connection.QuerySingleOrDefaultAsync<User>(
             "sp_GetUserByUsername",
             new { Username = username },
@@ -59,7 +59,7 @@ public class UserRepository : IUserRepository
     public async Task<bool> ValidateUserCredentialsAsync(string username, string password)
     {
         using var connection = _context.CreateConnection();
-        
+
         var user = await connection.QuerySingleOrDefaultAsync<User>(
             "sp_GetUserByUsername",
             new { Username = username },
@@ -74,10 +74,11 @@ public class UserRepository : IUserRepository
     public async Task UpdateUserAsync(User user)
     {
         using var connection = _context.CreateConnection();
-        
+
         await connection.ExecuteAsync(
             "sp_UpdateUser",
-            new { 
+            new
+            {
                 UserId = user.UserId,
                 Username = user.Username,
                 IsActive = user.IsActive
@@ -86,35 +87,10 @@ public class UserRepository : IUserRepository
         );
     }
 
-    public async Task ChangePasswordAsync(Guid userId, string newPassword)
-    {
-        using var connection = _context.CreateConnection();
-        
-        await connection.ExecuteAsync(
-            "sp_UpdateUserPassword",
-            new { 
-                UserId = userId,
-                PasswordHash = HashPassword(newPassword)
-            },
-            commandType: CommandType.StoredProcedure
-        );
-    }
-
-    public async Task DeactivateUserAsync(Guid userId)
-    {
-        using var connection = _context.CreateConnection();
-        
-        await connection.ExecuteAsync(
-            "sp_DeactivateUser",
-            new { UserId = userId },
-            commandType: CommandType.StoredProcedure
-        );
-    }
-
     public async Task<IEnumerable<User>> SearchUsersAsync(string searchTerm)
     {
         using var connection = _context.CreateConnection();
-        
+
         return await connection.QueryAsync<User>(
             "sp_SearchUsers",
             new { SearchTerm = $"%{searchTerm}%" },
@@ -125,7 +101,7 @@ public class UserRepository : IUserRepository
     public async Task<bool> UsernameExistsAsync(string username)
     {
         using var connection = _context.CreateConnection();
-        
+
         var count = await connection.ExecuteScalarAsync<int>(
             "sp_CheckUsernameExists",
             new { Username = username },

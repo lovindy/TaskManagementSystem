@@ -39,7 +39,7 @@ public class UserController : ControllerBase
             var user = new User
             {
                 Username = registerDto.Username,
-                IsActive = true
+                IsActive = true,
             };
 
             var userId = await _userRepository.CreateUserAsync(user, registerDto.Password);

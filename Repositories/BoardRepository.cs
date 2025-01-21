@@ -17,15 +17,16 @@ public class BoardRepository : IBoardRepository
     public async Task<Guid> CreateBoardAsync(Board board)
     {
         using var connection = _context.CreateConnection();
-        using var transaction = connection.BeginTransaction();
+        connection.Open(); // Use SqlConnection's OpenAsync
+
+        using var transaction = connection.BeginTransaction(); // Use SqlTransaction
 
         try
         {
-            // Insert the board
             const string createBoardSql = @"
-                INSERT INTO Boards (Title, Description, CreatedBy)
-                OUTPUT INSERTED.BoardId
-                VALUES (@Title, @Description, @CreatedBy)";
+        INSERT INTO Boards (Title, Description, CreatedBy)
+        OUTPUT INSERTED.BoardId
+        VALUES (@Title, @Description, @CreatedBy)";
 
             var boardId = await connection.ExecuteScalarAsync<Guid>(
                 createBoardSql,
@@ -33,10 +34,9 @@ public class BoardRepository : IBoardRepository
                 transaction
             );
 
-            // Add creator as board owner
             const string addOwnerSql = @"
-                INSERT INTO BoardMembers (BoardId, UserId, Role)
-                VALUES (@BoardId, @UserId, 'Owner')";
+        INSERT INTO BoardMembers (BoardId, UserId, Role)
+        VALUES (@BoardId, @UserId, 'Admin')";
 
             await connection.ExecuteAsync(
                 addOwnerSql,
@@ -44,15 +44,16 @@ public class BoardRepository : IBoardRepository
                 transaction
             );
 
-            transaction.Commit();
+            transaction.Commit(); // Use synchronous Commit
             return boardId;
         }
         catch
         {
-            transaction.Rollback();
+            transaction.Rollback(); // Use synchronous Rollback
             throw;
         }
     }
+
 
     public async Task<Board> GetBoardByIdAsync(Guid boardId)
     {
@@ -80,6 +81,7 @@ public class BoardRepository : IBoardRepository
                         boardMember.User = user;
                         memberDictionary[member.UserId] = boardMember;
                     }
+
                     return boardMember;
                 },
                 new { BoardId = boardId },

@@ -146,6 +146,22 @@ public class UserController : ControllerBase
         }
     }
 
+    [Authorize(Roles = "Admin")]
+    [HttpGet("search")]
+    public async Task<ActionResult<IEnumerable<UserResponseDto>>> SearchUsers([FromQuery] string searchTerm)
+    {
+        try
+        {
+            var users = await _userRepository.SearchUsersAsync(searchTerm);
+            return Ok(users.Select(MapToUserResponse));
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error searching users");
+            return StatusCode(500, "Error searching users");
+        }
+    }
+
     private static UserResponseDto MapToUserResponse(User user)
     {
         return new UserResponseDto

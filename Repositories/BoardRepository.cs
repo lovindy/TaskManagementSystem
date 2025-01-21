@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using Dapper;
+using TaskManagementSystem.Data;
 using TaskManagementSystem.Models;
 
 namespace TaskManagementSystem.Repositories;

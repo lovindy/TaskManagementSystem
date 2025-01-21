@@ -1,7 +1,7 @@
 ﻿using Microsoft.Data.SqlClient;
 using System.Data;
 
-namespace TaskManagementSystem.Repositories
+namespace TaskManagementSystem.Data
 {
     public class DbContext : IDbContext
     {

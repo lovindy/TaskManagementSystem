@@ -1,6 +1,6 @@
 ﻿using System.Data;
 
-namespace TaskManagementSystem.Repositories
+namespace TaskManagementSystem.Data
 {
     public interface IDbContext
     {

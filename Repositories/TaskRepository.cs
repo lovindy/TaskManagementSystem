@@ -32,20 +32,49 @@ namespace TaskManagementSystem.Repositories
 
             return taskId;
         }
-
-        public Task<IEnumerable<TaskItem>> GetTasksByListAsync(Guid listId)
+        
+        public async Task<IEnumerable<TaskItem>> GetTasksByListAsync(Guid listId)
         {
-            throw new NotImplementedException();
+            using var connection = _context.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("@ListId", listId);
+
+            var tasks = await connection.QueryAsync<TaskItem>(
+                "sp_GetTasksByList",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return tasks;
         }
 
-        public Task UpdateTaskPositionAsync(Guid taskId, Guid listId, int newPosition)
+        public async Task UpdateTaskPositionAsync(Guid taskId, Guid listId, int newPosition)
         {
-            throw new NotImplementedException();
+            using var connection = _context.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("@TaskId", taskId);
+            parameters.Add("@ListId", listId);
+            parameters.Add("@NewPosition", newPosition);
+
+            await connection.ExecuteAsync(
+                "sp_UpdateTaskPosition",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
 
-        public Task AssignTaskAsync(Guid taskId, Guid userId)
+        public async Task AssignTaskAsync(Guid taskId, Guid userId)
         {
-            throw new NotImplementedException();
+            using var connection = _context.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("@TaskId", taskId);
+            parameters.Add("@UserId", userId);
+
+            await connection.ExecuteAsync(
+                "sp_AssignTask",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
         }
     }
 }

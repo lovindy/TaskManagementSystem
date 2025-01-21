@@ -55,7 +55,7 @@ public class BoardRepository : IBoardRepository
     public async Task<Board> GetBoardByIdAsync(Guid boardId)
     {
         using var connection = _context.CreateConnection();
-
+        
         // Get board details
         const string boardSql = @"
             SELECT *
@@ -78,8 +78,7 @@ public class BoardRepository : IBoardRepository
 
             var members = await connection.QueryAsync<BoardMember, User, BoardMember>(
                 membersSql,
-                (member, user) =>
-                {
+                (member, user) => {
                     member.User = user;
                     return member;
                 },
@@ -96,7 +95,7 @@ public class BoardRepository : IBoardRepository
     public async Task<IEnumerable<Board>> GetUserBoardsAsync(Guid userId)
     {
         using var connection = _context.CreateConnection();
-
+        
         const string sql = @"
             SELECT b.*
             FROM Boards b
@@ -117,8 +116,7 @@ public class BoardRepository : IBoardRepository
 
             var members = await connection.QueryAsync<BoardMember, User, BoardMember>(
                 membersSql,
-                (member, user) =>
-                {
+                (member, user) => {
                     member.User = user;
                     return member;
                 },
@@ -135,7 +133,7 @@ public class BoardRepository : IBoardRepository
     public async Task UpdateBoardAsync(Board board)
     {
         using var connection = _context.CreateConnection();
-
+        
         const string sql = @"
             UPDATE Boards 
             SET Title = @Title,
@@ -195,7 +193,7 @@ public class BoardRepository : IBoardRepository
     public async Task<bool> IsBoardOwnerAsync(Guid boardId, Guid userId)
     {
         using var connection = _context.CreateConnection();
-
+        
         const string sql = @"
             SELECT COUNT(1)
             FROM BoardMembers
@@ -209,5 +207,29 @@ public class BoardRepository : IBoardRepository
         );
 
         return count > 0;
+    }
+
+    public async Task<IEnumerable<Board>> SearchBoardsAsync(string searchTerm, Guid userId)
+    {
+        using var connection = _context.CreateConnection();
+        
+        const string sql = @"
+            SELECT DISTINCT b.*
+            FROM Boards b
+            JOIN BoardMembers bm ON b.BoardId = bm.BoardId
+            WHERE bm.UserId = @UserId
+            AND (
+                b.Title LIKE @SearchTerm
+                OR b.Description LIKE @SearchTerm
+            )
+            ORDER BY b.UpdatedAt DESC";
+
+        return await connection.QueryAsync<Board>(
+            sql,
+            new { 
+                UserId = userId,
+                SearchTerm = $"%{searchTerm}%"
+            }
+        );
     }
 }

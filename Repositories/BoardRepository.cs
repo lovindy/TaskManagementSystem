@@ -91,4 +91,43 @@ public class BoardRepository : IBoardRepository
 
         return board;
     }
+
+    public async Task<IEnumerable<Board>> GetUserBoardsAsync(Guid userId)
+    {
+        using var connection = _context.CreateConnection();
+        
+        const string sql = @"
+            SELECT b.*
+            FROM Boards b
+            JOIN BoardMembers bm ON b.BoardId = bm.BoardId
+            WHERE bm.UserId = @UserId
+            ORDER BY b.UpdatedAt DESC";
+
+        var boards = await connection.QueryAsync<Board>(sql, new { UserId = userId });
+
+        // Load members for each board
+        foreach (var board in boards)
+        {
+            const string membersSql = @"
+                SELECT bm.*, u.Username, u.IsActive
+                FROM BoardMembers bm
+                JOIN Users u ON bm.UserId = u.UserId
+                WHERE bm.BoardId = @BoardId";
+
+            var members = await connection.QueryAsync<BoardMember, User, BoardMember>(
+                membersSql,
+                (member, user) => {
+                    member.User = user;
+                    return member;
+                },
+                new { BoardId = board.BoardId },
+                splitOn: "Username"
+            );
+
+            board.Members = members.ToList();
+        }
+
+        return boards;
+    }
+    
 }

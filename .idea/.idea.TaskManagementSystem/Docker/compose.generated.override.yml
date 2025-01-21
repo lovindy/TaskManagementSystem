@@ -1,0 +1,21 @@
+# This is a generated file. Not intended for manual editing.
+services:
+  taskmanagementsystem:
+    build:
+      context: "C:\\Users\\makaramarady.seang\\RiderProjects\\TaskManagementSystem"
+      dockerfile: "Dockerfile"
+      target: "base"
+    command: []
+    entrypoint:
+    - "dotnet"
+    - "/app/bin/Debug/net8.0/TaskManagementSystem.dll"
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+      DOTNET_USE_POLLING_FILE_WATCHER: "true"
+    image: "taskmanagementsystem:dev"
+    ports: []
+    volumes:
+    - "C:\\Users\\makaramarady.seang\\RiderProjects\\TaskManagementSystem:/app:rw"
+    - "C:\\Users\\makaramarady.seang\\RiderProjects\\TaskManagementSystem:/src:rw"
+    - "C:\\Users\\makaramarady.seang\\.nuget\\packages:/home/app/.nuget/packages"
+    working_dir: "/app"

@@ -6,6 +6,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<IBoardMemberRepository, BoardMemberRepository>();
+builder.Services.AddScoped<IListRepository, ListRepository>();
+
 // Register DB Context
 builder.Services.AddScoped<IDbContext>(sp =>
     new DbContext(builder.Configuration.GetConnectionString("DefaultConnection")));

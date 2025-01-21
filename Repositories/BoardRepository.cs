@@ -55,7 +55,7 @@ public class BoardRepository : IBoardRepository
     public async Task<Board> GetBoardByIdAsync(Guid boardId)
     {
         using var connection = _context.CreateConnection();
-        
+
         // Get board details
         const string boardSql = @"
             SELECT *
@@ -78,7 +78,8 @@ public class BoardRepository : IBoardRepository
 
             var members = await connection.QueryAsync<BoardMember, User, BoardMember>(
                 membersSql,
-                (member, user) => {
+                (member, user) =>
+                {
                     member.User = user;
                     return member;
                 },
@@ -95,7 +96,7 @@ public class BoardRepository : IBoardRepository
     public async Task<IEnumerable<Board>> GetUserBoardsAsync(Guid userId)
     {
         using var connection = _context.CreateConnection();
-        
+
         const string sql = @"
             SELECT b.*
             FROM Boards b
@@ -116,7 +117,8 @@ public class BoardRepository : IBoardRepository
 
             var members = await connection.QueryAsync<BoardMember, User, BoardMember>(
                 membersSql,
-                (member, user) => {
+                (member, user) =>
+                {
                     member.User = user;
                     return member;
                 },
@@ -129,5 +131,83 @@ public class BoardRepository : IBoardRepository
 
         return boards;
     }
-    
+
+    public async Task UpdateBoardAsync(Board board)
+    {
+        using var connection = _context.CreateConnection();
+
+        const string sql = @"
+            UPDATE Boards 
+            SET Title = @Title,
+                Description = @Description,
+                UpdatedAt = GETDATE()
+            WHERE BoardId = @BoardId";
+
+        await connection.ExecuteAsync(sql, board);
+    }
+
+    public async Task DeleteBoardAsync(Guid boardId)
+    {
+        using var connection = _context.CreateConnection();
+        using var transaction = connection.BeginTransaction();
+
+        try
+        {
+            // Delete all tasks in all lists
+            const string deleteTasksSql = @"
+                DELETE t
+                FROM Tasks t
+                JOIN Lists l ON t.ListId = l.ListId
+                WHERE l.BoardId = @BoardId";
+
+            await connection.ExecuteAsync(deleteTasksSql, new { BoardId = boardId }, transaction);
+
+            // Delete all lists
+            const string deleteListsSql = @"
+                DELETE FROM Lists
+                WHERE BoardId = @BoardId";
+
+            await connection.ExecuteAsync(deleteListsSql, new { BoardId = boardId }, transaction);
+
+            // Delete all board members
+            const string deleteMembersSql = @"
+                DELETE FROM BoardMembers
+                WHERE BoardId = @BoardId";
+
+            await connection.ExecuteAsync(deleteMembersSql, new { BoardId = boardId }, transaction);
+
+            // Delete the board
+            const string deleteBoardSql = @"
+                DELETE FROM Boards
+                WHERE BoardId = @BoardId";
+
+            await connection.ExecuteAsync(deleteBoardSql, new { BoardId = boardId }, transaction);
+
+            transaction.Commit();
+        }
+        catch
+        {
+            transaction.Rollback();
+            throw;
+        }
+    }
+
+    public async Task<bool> IsBoardOwnerAsync(Guid boardId, Guid userId)
+    {
+        using var connection = _context.CreateConnection();
+
+        const string sql = @"
+            SELECT COUNT(1)
+            FROM BoardMembers
+            WHERE BoardId = @BoardId 
+            AND UserId = @UserId 
+            AND Role = 'Owner'";
+
+        var count = await connection.ExecuteScalarAsync<int>(
+            sql,
+            new { BoardId = boardId, UserId = userId }
+        );
+
+        return count > 0;
+    }
 }

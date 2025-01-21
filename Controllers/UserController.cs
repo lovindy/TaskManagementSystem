@@ -1,7 +1,7 @@
 ﻿using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using TaskManagementSystem.DTOs;
+using TaskManagementSystem.DTOs.Users;
 using TaskManagementSystem.Models;
 using TaskManagementSystem.Repositories;
 using TaskManagementSystem.Services;

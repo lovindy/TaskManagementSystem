@@ -1,4 +1,5 @@
 using TaskManagementSystem.Repositories;
+using TaskManagementSystem.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -6,8 +7,12 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 
+builder.Services.AddScoped<IBoardRepository, BoardRepository>();
 builder.Services.AddScoped<IBoardMemberRepository, BoardMemberRepository>();
 builder.Services.AddScoped<IListRepository, ListRepository>();
+builder.Services.AddScoped<IListRepository, ListRepository>();
+builder.Services.AddScoped<ITaskRepository, TaskRepository>();
+builder.Services.AddScoped<ITokenService, TokenService>();
 
 // Register DB Context
 builder.Services.AddScoped<IDbContext>(sp =>

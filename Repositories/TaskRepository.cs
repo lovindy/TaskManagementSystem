@@ -33,7 +33,7 @@ namespace TaskManagementSystem.Repositories
 
             return taskId;
         }
-        
+
         public async Task<IEnumerable<TaskItem>> GetTasksByListAsync(Guid listId)
         {
             using var connection = _context.CreateConnection();

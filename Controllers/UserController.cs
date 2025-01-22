@@ -60,7 +60,7 @@ public class UserController : ControllerBase
         try
         {
             var isValid = await _userRepository.ValidateUserCredentialsAsync(
-                loginDto.Username, 
+                loginDto.Username,
                 loginDto.Password
             );
 
@@ -128,7 +128,7 @@ public class UserController : ControllerBase
                 return NotFound();
             }
 
-            if (updateDto.Username != user.Username && 
+            if (updateDto.Username != user.Username &&
                 await _userRepository.UsernameExistsAsync(updateDto.Username))
             {
                 return BadRequest("Username is already taken");

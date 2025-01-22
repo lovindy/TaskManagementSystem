@@ -35,7 +35,7 @@ public class TaskController : ControllerBase
         try
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
-        
+
             var task = new TaskItem
             {
                 ListId = createTaskDto.ListId,
@@ -43,10 +43,9 @@ public class TaskController : ControllerBase
                 Description = createTaskDto.Description,
                 DueDate = createTaskDto.DueDate,
                 Priority = createTaskDto.Priority,
-                CreatedBy = userId,
-                AssignedTo = createTaskDto.AssignedTo
+                CreatedBy = userId
             };
-        
+
             var taskId = await _taskRepository.CreateTaskAsync(task);
             return Ok(taskId);
         }
@@ -78,13 +77,13 @@ public class TaskController : ControllerBase
     public async Task<ActionResult> UpdateTaskPosition(
         Guid taskId,
         [FromQuery] Guid listId,
-        [FromBody] int newPosition)
+        [FromBody] UpdatePositionRequest newPosition)
     {
         try
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
 
-            await _taskRepository.UpdateTaskPositionAsync(taskId, listId, newPosition);
+            await _taskRepository.UpdateTaskPositionAsync(taskId, listId, newPosition.Position);
             return Ok();
         }
         catch (Exception ex)
@@ -100,11 +99,6 @@ public class TaskController : ControllerBase
         try
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
-
-            // TODO: Add methods to:
-            // 1. Verify user has access to the task/board
-            // 2. Verify assignee is a member of the board
-            // For now, we assume the stored procedure handles these checks
 
             await _taskRepository.AssignTaskAsync(taskId, assigneeId);
             return Ok();

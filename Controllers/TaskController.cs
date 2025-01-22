@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TaskManagementSystem.DTOs.Tasks;
 using TaskManagementSystem.Models;
 using TaskManagementSystem.Repositories;
 
@@ -29,15 +30,23 @@ public class TaskController : ControllerBase
     }
 
     [HttpPost]
-    public async Task<ActionResult<Guid>> CreateTask([FromBody] TaskItem task)
+    public async Task<ActionResult<Guid>> CreateTask([FromBody] CreateTaskDto createTaskDto)
     {
         try
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
-            
-            // Set the creator
-            task.CreatedBy = userId;
-            
+        
+            var task = new TaskItem
+            {
+                ListId = createTaskDto.ListId,
+                Title = createTaskDto.Title,
+                Description = createTaskDto.Description,
+                DueDate = createTaskDto.DueDate,
+                Priority = createTaskDto.Priority,
+                CreatedBy = userId,
+                AssignedTo = createTaskDto.AssignedTo
+            };
+        
             var taskId = await _taskRepository.CreateTaskAsync(task);
             return Ok(taskId);
         }

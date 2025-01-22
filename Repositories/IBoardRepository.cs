@@ -11,4 +11,5 @@ public interface IBoardRepository
     Task DeleteBoardAsync(Guid boardId);
     Task<bool> IsBoardOwnerAsync(Guid boardId, Guid userId);
     Task<IEnumerable<Board>> SearchBoardsAsync(string searchTerm, Guid userId);
+    Task<bool> IsBoardMemberWithRoleAsync(Guid boardId, Guid userId, string role);
 }

@@ -1,10 +1,9 @@
 ﻿namespace TaskManagementSystem.Models
 {
-    public class TaskAssignee
+    public enum TaskPriority
     {
-        public Guid TaskId { get; set; }
-        public Guid UserId { get; set; }
-        public DateTime AssignedAt { get; set; }
-        public User User { get; set; }
+        Low = 0,
+        Medium = 1,
+        High = 2
     }
 }

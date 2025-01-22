@@ -220,4 +220,20 @@ public class BoardRepository : IBoardRepository
             commandType: CommandType.StoredProcedure
         );
     }
+    public async Task<bool> IsBoardMemberWithRoleAsync(Guid boardId, Guid userId, string role)
+    {
+        using var connection = _context.CreateConnection();
+        const string sql = @"
+            SELECT COUNT(1) 
+            FROM BoardMembers 
+            WHERE BoardId = @BoardId 
+            AND UserId = @UserId 
+            AND Role = @Role";
+            
+        var count = await connection.ExecuteScalarAsync<int>(
+            sql, 
+            new { BoardId = boardId, UserId = userId, Role = role }
+        );
+        return count > 0;
+    }
 }

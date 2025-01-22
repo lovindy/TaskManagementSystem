@@ -32,8 +32,9 @@ public class ListController : ControllerBase
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
 
-            // Verify board access
-            if (!await _boardRepository.IsBoardOwnerAsync(list.BoardId, userId))
+            // Check if user is board owner or admin
+            if (!await _boardRepository.IsBoardOwnerAsync(list.BoardId, userId) &&
+                !await _boardRepository.IsBoardMemberWithRoleAsync(list.BoardId, userId, "Admin"))
             {
                 return Forbid();
             }
@@ -83,7 +84,12 @@ public class ListController : ControllerBase
         try
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
-            
+
+            if (!await HasListAccess(listId, userId, "Member"))
+            {
+                return Forbid();
+            }
+
             await _listRepository.UpdateListPositionAsync(listId, newPosition);
             return Ok();
         }
@@ -101,8 +107,11 @@ public class ListController : ControllerBase
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
 
-            // Similar note about board ownership check as in UpdateListPosition
-            
+            if (!await HasListAccess(listId, userId, "Admin"))
+            {
+                return Forbid();
+            }
+
             await _listRepository.UpdateListTitleAsync(listId, newTitle);
             return Ok();
         }
@@ -120,7 +129,10 @@ public class ListController : ControllerBase
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
 
-            // Similar note about board ownership check as in UpdateListPosition
+            if (!await HasListAccess(listId, userId, "Admin"))
+            {
+                return Forbid();
+            }
 
             await _listRepository.DeleteListAsync(listId);
             return NoContent();
@@ -130,5 +142,15 @@ public class ListController : ControllerBase
             _logger.LogError(ex, "Error deleting list");
             return StatusCode(500, "Error deleting list");
         }
+    }
+
+    private async Task<bool> HasListAccess(Guid listId, Guid userId, string requiredRole = "Member")
+    {
+        var list = await _listRepository.GetListAsync(listId);
+        if (list == null) return false;
+
+        // Check if user is board owner or has required role
+        return await _boardRepository.IsBoardOwnerAsync(list.BoardId, userId) ||
+               await _boardRepository.IsBoardMemberWithRoleAsync(list.BoardId, userId, requiredRole);
     }
 }

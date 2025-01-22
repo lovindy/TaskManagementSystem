@@ -18,25 +18,39 @@ public class ListRepository : IListRepository
     {
         using var connection = _context.CreateConnection();
         const string sql = @"
-            DECLARE @Position INT;
-            SELECT @Position = ISNULL(MAX(Position), 0) + 1 
-            FROM Lists 
-            WHERE BoardId = @BoardId;
+        DECLARE @NextPosition INT;
+        SELECT @NextPosition = ISNULL(MAX(Position), 0) + 1 
+        FROM Lists 
+        WHERE BoardId = @BoardId;
 
-            INSERT INTO Lists (BoardId, Title, Position)
-            OUTPUT INSERTED.ListId
-            VALUES (@BoardId, @Title, @Position)";
+        INSERT INTO Lists (BoardId, Title, Position)
+        OUTPUT INSERTED.ListId
+        VALUES (@BoardId, @Title, @NextPosition)";
 
-        return await connection.ExecuteScalarAsync<Guid>(sql, list);
+        var parameters = new
+        {
+            BoardId = list.BoardId,
+            Title = list.Title
+        };
+
+        return await connection.ExecuteScalarAsync<Guid>(sql, parameters);
+    }
+
+    public async Task<List?> GetListAsync(Guid listId)
+    {
+        using var connection = _context.CreateConnection();
+        const string sql = "SELECT * FROM Lists WHERE ListId = @ListId";
+        return await connection.QuerySingleOrDefaultAsync<List>(sql, new { ListId = listId });
     }
 
     public async Task<IEnumerable<List>> GetBoardListsAsync(Guid boardId)
     {
         using var connection = _context.CreateConnection();
         const string storedProcedure = "usp_GetBoardLists";
-        return await connection.QueryAsync<List>(storedProcedure, new { BoardId = boardId }, commandType: CommandType.StoredProcedure);
+        return await connection.QueryAsync<List>(storedProcedure, new { BoardId = boardId },
+            commandType: CommandType.StoredProcedure);
     }
-    
+
     public async Task UpdateListPositionAsync(Guid listId, int newPosition)
     {
         using var connection = _context.CreateConnection();
@@ -48,7 +62,7 @@ public class ListRepository : IListRepository
             commandType: System.Data.CommandType.StoredProcedure
         );
     }
-    
+
     public async Task UpdateListTitleAsync(Guid listId, string newTitle)
     {
         using var connection = _context.CreateConnection();

@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using System.Data;
 using TaskManagementSystem.Data;
+using TaskManagementSystem.DTOs.Tasks;
 using TaskManagementSystem.Models;
 
 namespace TaskManagementSystem.Repositories
@@ -76,6 +77,38 @@ namespace TaskManagementSystem.Repositories
                 parameters,
                 commandType: CommandType.StoredProcedure
             );
+        }
+
+        public async Task UpdateTaskAsync(Guid taskId, UpdateTaskDto updateDto)
+        {
+            using var connection = _context.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("@TaskId", taskId);
+            parameters.Add("@Title", updateDto.Title);
+            parameters.Add("@Description", updateDto.Description);
+            parameters.Add("@DueDate", updateDto.DueDate);
+            parameters.Add("@Priority", updateDto.Priority);
+
+            await connection.ExecuteAsync(
+                "sp_UpdateTask",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+        }
+
+        public async Task<TaskItem?> GetTaskByIdAsync(Guid taskId)
+        {
+            using var connection = _context.CreateConnection();
+            var parameters = new DynamicParameters();
+            parameters.Add("@TaskId", taskId);
+
+            var task = await connection.QuerySingleOrDefaultAsync<TaskItem>(
+                "sp_GetTaskById",
+                parameters,
+                commandType: CommandType.StoredProcedure
+            );
+
+            return task;
         }
     }
 }

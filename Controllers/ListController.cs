@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
+using TaskManagementSystem.DTOs.Lists;
 using TaskManagementSystem.DTOs.Tasks;
 using TaskManagementSystem.Models;
 using TaskManagementSystem.Repositories;
@@ -102,7 +103,7 @@ public class ListController : ControllerBase
     }
 
     [HttpPut("{listId:guid}/title")]
-    public async Task<ActionResult> UpdateListTitle(Guid listId, [FromBody] string newTitle)
+    public async Task<ActionResult> UpdateListTitle(Guid listId, [FromBody] UpdateListTitleDto dto)
     {
         try
         {
@@ -113,7 +114,7 @@ public class ListController : ControllerBase
                 return Forbid();
             }
 
-            await _listRepository.UpdateListTitleAsync(listId, newTitle);
+            await _listRepository.UpdateListTitleAsync(listId, dto.Title);
             return Ok();
         }
         catch (Exception ex)

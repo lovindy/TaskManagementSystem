@@ -109,4 +109,26 @@ public class TaskController : ControllerBase
             return StatusCode(500, "Error assigning task");
         }
     }
+
+    [HttpPut("{taskId:guid}")]
+    public async Task<ActionResult> UpdateTask(Guid taskId, [FromBody] UpdateTaskDto updateDto)
+    {
+        try
+        {
+            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
+
+            // Verify the task exists and belongs to the user (optional, for added security)
+            var task = await _taskRepository.GetTaskByIdAsync(taskId);
+            if (task == null)
+                return NotFound("Task not found");
+
+            await _taskRepository.UpdateTaskAsync(taskId, updateDto);
+            return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating task");
+            return StatusCode(500, "Error updating task");
+        }
+    }
 }

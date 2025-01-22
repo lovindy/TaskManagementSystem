@@ -35,11 +35,16 @@ public class BoardMemberRepository : IBoardMemberRepository
     public async Task AddBoardMemberAsync(BoardMember member)
     {
         using var connection = _context.CreateConnection();
-        const string sql = @"
-            INSERT INTO BoardMembers (BoardId, UserId, Role)
-            VALUES (@BoardId, @UserId, @Role)";
+        var parameters = new DynamicParameters();
+        parameters.Add("@BoardId", member.BoardId);
+        parameters.Add("@UserId", member.UserId);
+        parameters.Add("@Role", member.Role);
 
-        await connection.ExecuteAsync(sql, member);
+        await connection.ExecuteAsync(
+            "sp_AddBoardMember",
+            parameters,
+            commandType: CommandType.StoredProcedure
+        );
     }
 
     public async Task UpdateBoardMemberRoleAsync(Guid boardId, Guid userId, string newRole)
@@ -61,5 +66,28 @@ public class BoardMemberRepository : IBoardMemberRepository
             WHERE BoardId = @BoardId AND UserId = @UserId";
 
         await connection.ExecuteAsync(sql, new { BoardId = boardId, UserId = userId });
+    }
+    
+    // Implementation example:
+    public async Task<bool> IsBoardMemberAsync(Guid boardId, Guid userId)
+    {
+        using var connection = _context.CreateConnection();
+        const string sql = @"
+            SELECT COUNT(1) FROM BoardMembers 
+            WHERE BoardId = @BoardId AND UserId = @UserId";
+            
+        var count = await connection.ExecuteScalarAsync<int>(sql, new { BoardId = boardId, UserId = userId });
+        return count > 0;
+    }
+
+    public async Task<bool> IsBoardAdminAsync(Guid boardId, Guid userId)
+    {
+        using var connection = _context.CreateConnection();
+        const string sql = @"
+            SELECT COUNT(1) FROM BoardMembers 
+            WHERE BoardId = @BoardId AND UserId = @UserId AND Role = 'Admin'";
+            
+        var count = await connection.ExecuteScalarAsync<int>(sql, new { BoardId = boardId, UserId = userId });
+        return count > 0;
     }
 }

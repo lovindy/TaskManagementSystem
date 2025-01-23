@@ -1,0 +1,21 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=3c535802_002D0b8c_002D4c06_002Db287_002D5bc30a39191f/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateUserAsync_ShouldReturnUserId #4" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::1371C3F4-D163-4A4E-9FE0-80286660AE9A::net8.0::TaskManagement.Tests.UserRepositoryTests.CreateUserAsync_ShouldReturnUserId&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=453581d8_002D5f5b_002D45bb_002Da31e_002De89e05f72a32/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateUserAsync_ShouldReturnUserId" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::1371C3F4-D163-4A4E-9FE0-80286660AE9A::net8.0::TaskManagement.Tests.UserRepositoryTests.CreateUserAsync_ShouldReturnUserId&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=912c7bdd_002D3198_002D44a8_002D8d2d_002D9997b0d8d882/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateUserAsync_ShouldReturnUserId #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::1371C3F4-D163-4A4E-9FE0-80286660AE9A::net8.0::TaskManagement.Tests.UserRepositoryTests.CreateUserAsync_ShouldReturnUserId&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=c7b47af7_002D5062_002D47f0_002Db695_002D506b65a063b9/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="CreateUserAsync_ShouldReturnUserId #3" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::1371C3F4-D163-4A4E-9FE0-80286660AE9A::net8.0::TaskManagement.Tests.UserRepositoryTests.CreateUserAsync_ShouldReturnUserId&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String></wpf:ResourceDictionary>

@@ -117,7 +117,6 @@ public class TaskController : ControllerBase
         {
             var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value!);
 
-            // Verify the task exists and belongs to the user (optional, for added security)
             var task = await _taskRepository.GetTaskByIdAsync(taskId);
             if (task == null)
                 return NotFound("Task not found");

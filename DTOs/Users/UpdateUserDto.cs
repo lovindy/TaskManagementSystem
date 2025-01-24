@@ -6,5 +6,5 @@ public class UpdateUserDto
 {
     [Required]
     [StringLength(255)]
-    public string Username { get; set; }
+    public required string Username { get; set; }
 }

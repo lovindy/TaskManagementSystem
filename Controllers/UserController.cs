@@ -97,7 +97,7 @@ public class UserController : ControllerBase
     {
         try
         {
-            var userId = Guid.Parse(User.FindFirst(ClaimTypes.NameIdentifier).Value);
+            Guid userId = Guid.Parse(input: User.FindFirst(ClaimTypes.NameIdentifier).Value);
             var user = await _userRepository.GetUserByIdAsync(userId);
 
             if (user == null)

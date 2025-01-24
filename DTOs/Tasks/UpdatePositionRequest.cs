@@ -2,5 +2,5 @@
 
 public class UpdatePositionRequest
 {
-    public int Position { get; set; }
+    public required int Position { get; set; }
 }
